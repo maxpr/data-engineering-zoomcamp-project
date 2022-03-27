@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  terraform:
+    image: hashicorp/terraform:1.1.7
+    volumes:
+      - ./terraform:/terraform
+      - ./.google:/.google
+    working_dir: /terraform
+
+  pyspark-notebook:
+    build: spark
+    volumes: 
+      - ./spark/pyspark:/spark
+      - ./.google:/.google
+    ports:
+      - 8899:8899
+      - 4040:4040
+    environment:
+      - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
+      - GOOGLE_BIGQUERY_DATASET=${GOOGLE_BIGQUERY_DATASET}
+      - GOOGLE_CLOUD_STORAGE_ID=${GOOGLE_CLOUD_STORAGE_ID}
+    entrypoint: ["jupyter", "notebook", "--port=8899", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
+  
+  pyspark-script:
+    build: spark
+    volumes: 
+      - ./spark/pyspark:/spark
+      - ./.google:/.google
+    ports:
+      - 8899:8899
+      - 4040:4040
+    environment:
+      - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
+      - GOOGLE_BIGQUERY_DATASET=${GOOGLE_BIGQUERY_DATASET}
+      - GOOGLE_CLOUD_STORAGE_ID=${GOOGLE_CLOUD_STORAGE_ID}
+    entrypoint: ["python3", "transform.py"]

@@ -1,0 +1,7 @@
+pandas
+pyarrow
+numpy
+notebook
+google-cloud-bigquery
+google-cloud-storage
+wget
